@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academic Schedule</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+  <div class="header-container">
+    <div class="brand">
+      <div class="brand-icon"><i class="fa-solid fa-calendar-days"></i></div>
+      <div>
+        <h1 class="brand-title">Academic Schedule</h1>
+        <p class="brand-subtitle">Manage & track your timetable</p>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Theme">
+        <i class="fa-solid fa-moon moon-icon"></i>
+        <i class="fa-solid fa-sun sun-icon"></i>
+      </button>
+
+      <button id="add-class-btn" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> <span>Add Class</span>
+      </button>
+
+      <button id="export-btn" class="btn btn-outline" title="Export JSON">
+        <i class="fa-solid fa-download"></i>
+      </button>
+
+      <label for="import-file" class="btn btn-outline" title="Import JSON">
+        <i class="fa-solid fa-upload"></i>
+      </label>
+      <input type="file" id="import-file" accept=".json" style="display: none;" />
+
+      <button id="reset-btn" class="btn btn-ghost" title="Reset Timetable">
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+    <main class="main-container">
+
+    <!-- Summary Stats Row -->
+    <section class="stats-grid">
+        <div class="stat-card">
+        <div class="stat-icon-wrapper bg-indigo-light text-indigo">
+            <i class="fa-solid fa-book-open"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-number" id="stat-total">11</span>
+            <span class="stat-label">TOTAL CLASSES</span>
+        </div>
+        </div>
+
+        <div class="stat-card">
+        <div class="stat-icon-wrapper bg-blue-light text-blue">
+            <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-number" id="stat-lectures">7</span>
+            <span class="stat-label">LECTURES</span>
+        </div>
+        </div>
+
+        <div class="stat-card">
+        <div class="stat-icon-wrapper bg-amber-light text-amber">
+            <i class="fa-solid fa-chalkboard-user"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-number" id="stat-tutorials">4</span>
+            <span class="stat-label">TUTORIALS</span>
+        </div>
+        </div>
+
+        <div class="stat-card">
+        <div class="stat-icon-wrapper bg-emerald-light text-emerald">
+            <i class="fa-solid fa-wifi"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-number" id="stat-online">1</span>
+            <span class="stat-label">ONLINE SESSIONS</span>
+        </div>
+        </div>
+    </section>
+
+    <!-- Controls Bar -->
+    <section class="controls-bar">
+        <!-- Search Input -->
+        <div class="search-box">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input type="text" id="search-input" placeholder="Search course, hall, or instructor..." />
+        </div>
+
+        <div class="controls-right">
+        <!-- Type Filter Pills -->
+        <div class="filter-group">
+            <button class="filter-pill active" data-type="all">All</button>
+            <button class="filter-pill" data-type="Lecture">Lectures</button>
+            <button class="filter-pill" data-type="Tutorial">Tutorials</button>
+        </div>
+
+        <!-- View Mode Switcher -->
+        <div class="view-switcher">
+            <button class="view-btn active" data-view="cards">
+            <i class="fa-solid fa-border-all"></i> Cards
+            </button>
+            <button class="view-btn" data-view="grid">
+            <i class="fa-solid fa-table-cells"></i> Grid View
+            </button>
+        </div>
+        </div>
+    </section>
+
+    <!-- Dynamic Schedule Canvas -->
+    <section id="schedule-viewport" class="schedule-viewport cards-layout">
+        <!-- Content populated dynamically via JS -->
+    </section>
+
+    </main>
+
+    <!-- Add / Edit Modal -->
+    <div id="modal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header">
+        <h2 id="modal-title">Add Class</h2>
+        <button id="modal-close" class="close-icon"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <form id="class-form">
+        <input type="hidden" id="form-id" />
+
+        <div class="form-grid">
+            <div class="form-group">
+            <label for="form-code">Course Code</label>
+            <input type="text" id="form-code" placeholder="e.g. CS111" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-title">Course Title</label>
+            <input type="text" id="form-title" placeholder="e.g. Fundamentals of Computers" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-day">Day</label>
+            <select id="form-day" required>
+                <option value="Sunday">Sunday</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="form-type">Type</label>
+            <select id="form-type" required>
+                <option value="Lecture">Lecture</option>
+                <option value="Tutorial">Tutorial</option>
+            </select>
+            </div>
+
+            <div class="form-group">
+            <label for="form-start">Start Time</label>
+            <input type="time" id="form-start" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-end">End Time</label>
+            <input type="time" id="form-end" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-location">Hall / Location</label>
+            <input type="text" id="form-location" placeholder="e.g. H2-3 or Online" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-instructor">Instructor</label>
+            <input type="text" id="form-instructor" placeholder="e.g. Dr. Manar el Kady" required />
+            </div>
+
+            <div class="form-group">
+            <label for="form-group">Section / Group Tag</label>
+            <input type="text" id="form-group" placeholder="e.g. Sec: 1" />
+            </div>
+
+            <!-- Custom Color Picker Field -->
+            <div class="form-group">
+            <label for="form-color">Card Color</label>
+            <div class="color-picker-row">
+                <input type="color" id="form-color" value="#3b82f6" />
+                <span class="color-label">Custom Theme Color</span>
+            </div>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button type="button" id="modal-cancel-btn" class="btn btn-outline">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save Class</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <script src="script.js"></script>
+    <footer class="app-footer" style="text-align: center; padding: 1.5rem 0; color: var(--text-muted); font-size: 0.8125rem;">
+    <p>&copy; <span id="current-year"></span> Academic Schedule. All rights reserved. Designed & Developed by Kareem Safwat     .</p>
+</footer>
+</body>
+</html>
